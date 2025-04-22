@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block titulo %}Listar Ventas{% endblock %}
+{% block css %}
+<!-- Bootstrap y DataTables CSS -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<style>
+    .btn-dark {
+        background-color: #343a40 !important;
+        color: white !important;
+        border: none;
+    }
+
+    #buttons-container {
+        margin-bottom: 10px;
+        text-align: right;
+    }
+    .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: opacity 0.3s ease;
+}
+
+.back-button:hover {
+    opacity: 0.8;
+}
+
+.back-button i {
+    margin-right: 5px;
+}
+</style>
+{% endblock %}
+
+{% block cuerpo %}
+<div class="container mt-4">
+    <h2 class="mb-4">Ventas</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <a href='{% url "inicio" %}' class="back-button">
+        <i data-lucide="arrow-left"></i> Volver
+    </a>
+
+    <table id="ventasTable" class="display nowrap table table-striped table-bordered" style="width:100%;">
+        <thead>
+            <tr>
+                <th>CLIENTE</th>
+                <th>CORREO</th>
+                <th>PRECIO</th>
+                <th>TOTAL</th>
+                <th>FECHA</th>
+                <th>MEDIOPAGO</th>
+                <th>ACCIONES</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in data %}
+            <tr>
+                <td>{{ v.cliente.nombre }}</td>
+                <td>{{ v.cliente.correo }}</td>
+                <td>{{ v.precio }}</td>
+                <td>{{ v.total }}</td>
+                <td>{{ v.fecha }}</td>
+                <td>{{ v.get_medioPago_display }}</td>
+                <td>
+                    <a href="{% url 'detalles_venta' v.id %}" class="btn btn-dark btn-sm">Detalles</a>
+                </td>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- jQuery y DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+<script>
+    lucide.createIcons();
+    $(document).ready(function () {
+        $('#ventasTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            }
+        });
+    });
+</script>
+{% endblock %}
